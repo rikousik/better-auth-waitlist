@@ -1,6 +1,6 @@
 import { createAuthMiddleware } from "@better-auth/core/api";
+import { APIError } from "@better-auth/core/error";
 import type { BetterAuthPlugin } from "better-auth";
-import { APIError } from "better-auth/api";
 import { mergeSchema } from "better-auth/db";
 import { WAITLIST_ERROR_CODES } from "./error-codes";
 import {
@@ -192,9 +192,10 @@ export const waitlist = (options?: WaitlistOptions) => {
 								(ctx.body?.inviteCode as string | undefined) ||
 								ctx.headers?.get("x-invite-code");
 							if (!code) {
-								throw new APIError("FORBIDDEN", {
-									message: WAITLIST_ERROR_CODES.INVITE_CODE_REQUIRED,
-								});
+								throw APIError.from(
+									"FORBIDDEN",
+									WAITLIST_ERROR_CODES.INVITE_CODE_REQUIRED,
+								);
 							}
 
 							const entry = (await ctx.context.adapter.findOne({
@@ -206,9 +207,10 @@ export const waitlist = (options?: WaitlistOptions) => {
 							})) as Record<string, unknown> | null;
 
 							if (!entry) {
-								throw new APIError("FORBIDDEN", {
-									message: WAITLIST_ERROR_CODES.INVALID_INVITE_CODE,
-								});
+								throw APIError.from(
+									"FORBIDDEN",
+									WAITLIST_ERROR_CODES.INVALID_INVITE_CODE,
+								);
 							}
 
 							// Check expiration
@@ -216,9 +218,10 @@ export const waitlist = (options?: WaitlistOptions) => {
 								entry.inviteExpiresAt &&
 								new Date(entry.inviteExpiresAt as string) < new Date()
 							) {
-								throw new APIError("FORBIDDEN", {
-									message: WAITLIST_ERROR_CODES.INVALID_INVITE_CODE,
-								});
+								throw APIError.from(
+									"FORBIDDEN",
+									WAITLIST_ERROR_CODES.INVALID_INVITE_CODE,
+								);
 							}
 						} else if (email) {
 							// No invite code required -- just check approval status
@@ -229,9 +232,10 @@ export const waitlist = (options?: WaitlistOptions) => {
 							})) as Record<string, unknown> | null;
 
 							if (!entry || entry.status !== "approved") {
-								throw new APIError("FORBIDDEN", {
-									message: WAITLIST_ERROR_CODES.NOT_APPROVED,
-								});
+								throw APIError.from(
+									"FORBIDDEN",
+									WAITLIST_ERROR_CODES.NOT_APPROVED,
+								);
 							}
 						}
 						// If no email in body (e.g., OAuth callbacks), the databaseHooks

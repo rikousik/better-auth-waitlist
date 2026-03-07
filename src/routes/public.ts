@@ -1,5 +1,5 @@
 import { createAuthEndpoint } from "@better-auth/core/api";
-import { APIError } from "better-auth/api";
+import { APIError } from "@better-auth/core/error";
 import * as z from "zod";
 import { WAITLIST_ERROR_CODES } from "../error-codes";
 import type { WaitlistEntry, WaitlistOptions } from "../types";
@@ -33,9 +33,10 @@ export const joinWaitlist = (options: WaitlistOptions) =>
 				where: [{ field: "email", value: normalizedEmail }],
 			});
 			if (existing) {
-				throw new APIError("BAD_REQUEST", {
-					message: WAITLIST_ERROR_CODES.EMAIL_ALREADY_IN_WAITLIST,
-				});
+				throw APIError.from(
+					"BAD_REQUEST",
+					WAITLIST_ERROR_CODES.EMAIL_ALREADY_IN_WAITLIST,
+				);
 			}
 
 			// Check max size
@@ -44,9 +45,10 @@ export const joinWaitlist = (options: WaitlistOptions) =>
 					model: "waitlist",
 				});
 				if (count >= options.maxWaitlistSize) {
-					throw new APIError("BAD_REQUEST", {
-						message: WAITLIST_ERROR_CODES.WAITLIST_FULL,
-					});
+					throw APIError.from(
+						"BAD_REQUEST",
+						WAITLIST_ERROR_CODES.WAITLIST_FULL,
+					);
 				}
 			}
 
@@ -148,9 +150,10 @@ export const getWaitlistStatus = (_options: WaitlistOptions) =>
 				where: [{ field: "email", value: normalizedEmail }],
 			})) as Record<string, unknown> | null;
 			if (!entry) {
-				throw new APIError("NOT_FOUND", {
-					message: WAITLIST_ERROR_CODES.WAITLIST_ENTRY_NOT_FOUND,
-				});
+				throw APIError.from(
+					"NOT_FOUND",
+					WAITLIST_ERROR_CODES.WAITLIST_ENTRY_NOT_FOUND,
+				);
 			}
 			return ctx.json({
 				status: entry.status as string,

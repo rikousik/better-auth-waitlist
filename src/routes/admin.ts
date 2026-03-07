@@ -2,7 +2,8 @@ import {
 	createAuthEndpoint,
 	createAuthMiddleware,
 } from "@better-auth/core/api";
-import { APIError, sessionMiddleware } from "better-auth/api";
+import { APIError } from "@better-auth/core/error";
+import { sessionMiddleware } from "better-auth/api";
 import * as z from "zod";
 import { WAITLIST_ERROR_CODES } from "../error-codes";
 import type { WaitlistEntry, WaitlistOptions } from "../types";
@@ -17,9 +18,10 @@ const adminMiddleware = (options: WaitlistOptions) =>
 			const userRole = (ctx.context.session.user as Record<string, unknown>)
 				.role as string | undefined;
 			if (!userRole || !adminRoles.includes(userRole)) {
-				throw new APIError("FORBIDDEN", {
-					message: WAITLIST_ERROR_CODES.UNAUTHORIZED_ADMIN_ACTION,
-				});
+				throw APIError.from(
+					"FORBIDDEN",
+					WAITLIST_ERROR_CODES.UNAUTHORIZED_ADMIN_ACTION,
+				);
 			}
 			return {
 				session: ctx.context.session,
@@ -50,14 +52,16 @@ export const approveEntry = (options: WaitlistOptions) =>
 				where: [{ field: "email", value: normalizedEmail }],
 			})) as Record<string, unknown> | null;
 			if (!entry) {
-				throw new APIError("NOT_FOUND", {
-					message: WAITLIST_ERROR_CODES.WAITLIST_ENTRY_NOT_FOUND,
-				});
+				throw APIError.from(
+					"NOT_FOUND",
+					WAITLIST_ERROR_CODES.WAITLIST_ENTRY_NOT_FOUND,
+				);
 			}
 			if (entry.status === "registered") {
-				throw new APIError("BAD_REQUEST", {
-					message: WAITLIST_ERROR_CODES.ALREADY_REGISTERED,
-				});
+				throw APIError.from(
+					"BAD_REQUEST",
+					WAITLIST_ERROR_CODES.ALREADY_REGISTERED,
+				);
 			}
 
 			const inviteCode = crypto.randomUUID();
@@ -118,9 +122,10 @@ export const rejectEntry = (options: WaitlistOptions) =>
 				where: [{ field: "email", value: normalizedEmail }],
 			})) as Record<string, unknown> | null;
 			if (!entry) {
-				throw new APIError("NOT_FOUND", {
-					message: WAITLIST_ERROR_CODES.WAITLIST_ENTRY_NOT_FOUND,
-				});
+				throw APIError.from(
+					"NOT_FOUND",
+					WAITLIST_ERROR_CODES.WAITLIST_ENTRY_NOT_FOUND,
+				);
 			}
 
 			const now = new Date();
