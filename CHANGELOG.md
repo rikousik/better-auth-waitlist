@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/guilhermejansen/better-auth-waitlist/compare/v1.0.0...v1.0.1) (2026-03-07)
+
+
+### Bug Fixes
+
+* **compat:** update to better-auth 1.5.4 RawError $ERROR_CODES ([875d7da](https://github.com/guilhermejansen/better-auth-waitlist/commit/875d7daa70188a9119c920af58f456e6f16997b8))
+
 ## 1.0.0 (2026-02-10)
 
 
