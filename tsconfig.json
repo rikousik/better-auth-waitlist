@@ -4,7 +4,6 @@
     "target": "esnext",
     "module": "esnext",
     "moduleResolution": "bundler",
-    "downlevelIteration": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "verbatimModuleSyntax": true,
@@ -16,6 +15,7 @@
     "emitDeclarationOnly": true,
     "types": ["node", "bun"],
     "lib": ["esnext", "dom", "dom.iterable"],
+    "rootDir": "./src",
     "outDir": "./node_modules/.cache/ts/out",
     "tsBuildInfoFile": "./node_modules/.cache/ts/tsbuildinfo",
     "customConditions": []
